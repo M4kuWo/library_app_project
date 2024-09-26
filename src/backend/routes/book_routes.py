@@ -52,7 +52,7 @@ def create_book():
 def get_book(book_id):
     db: Session = next(get_db())
     book = db.query(Book).filter(Book.id == book_id).first()
-    booktype = db.query(BookType).filter(BookType.id == book_id).first()
+    booktype = db.query(BookType).filter(BookType.id == Book.book_type_id).first()
     if book:
         return jsonify({
             "id": book.id,
@@ -68,13 +68,14 @@ def get_book(book_id):
 def get_all_books():
     db: Session = next(get_db())
     books = db.query(Book).filter(Book.hidden == False).all()
+    booktype = db.query(BookType).filter(BookType.id == Book.book_type_id).first()
     books_list = [
         {
             "id": book.id,
             "title": book.title,
             "author": book.author,
             "year_published": book.year_published,
-            "type": book.type.name,  # Enum name
+            "type": booktype.type,
             "hidden": book.hidden
         } for book in books
     ]
@@ -85,31 +86,64 @@ def update_book(book_id):
     data = request.json
     try:
         db: Session = next(get_db())
+        
+        # Find the book to update
         updated_book = db.query(Book).filter(Book.id == book_id).first()
         if not updated_book:
             return jsonify({"error": "Book not found"}), 404
 
-        updated_book.title = data['title']
-        updated_book.author = data['author']
-        updated_book.year_published = data['year_published']
-        updated_book.type = BookTypeEnum(data['type'])  # Assuming type is passed correctly
-        updated_book.hidden = data.get('hidden', False)
+        # Validate if the 'type' field exists in the request data
+        if 'type' in data:
+            book_type_value = data['type']  # Expecting 'type' in the request body
+            
+            # Query the BookType to check if the provided type exists as an ID
+            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
 
+            if not book_type:
+                return jsonify({"error": "Invalid book type ID"}), 400
+            
+            # Update book type only if it's provided
+            updated_book.book_type_id = book_type_value
+
+        # Update fields only if they are provided in the request body
+        if 'title' in data:
+            updated_book.title = data['title']
+        if 'author' in data:
+            updated_book.author = data['author']
+        if 'year_published' in data:
+            updated_book.year_published = data['year_published']
+        if 'hidden' in data:
+            updated_book.hidden = data.get('hidden', False)
+
+        # Commit changes to the database
         db.commit()
+        
         return jsonify({"message": "Book updated successfully"}), 200
+
+    # Handle missing fields specifically
+    except KeyError as e:
+        return jsonify({"error": f"Missing field: {str(e)}"}), 400
+    
+    # Handle other exceptions (e.g., database errors, etc.)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+
 
 @book_routes_bp.route('/<int:book_id>', methods=['DELETE'])
 def delete_book(book_id):
     try:
         db: Session = next(get_db())
-        book = db.query(Book).filter(Book.id == book_id).first()
+        book = db.query(Book).filter(Book.id == book_id).one_or_none()  # Change to one_or_none for clarity
         if not book:
             return jsonify({"error": "Book not found"}), 404
 
-        book.hidden = True 
+        book.hidden = True  # Set hidden to True instead of deleting
         db.commit()
-        return jsonify({"message": "Book hidden successfully"}), 200
+        
+        return jsonify({"message": "Book hidden successfully"}), 204  # Return 204 No Content
+
     except Exception as e:
+        db.rollback()  # Ensure the session is rolled back if there's an error
         return jsonify({"error": str(e)}), 400
+
