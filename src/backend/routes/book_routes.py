@@ -143,7 +143,7 @@ def delete_book(book_id):
         book.hidden = True  # Set hidden to True instead of deleting
         db.commit()
         
-        return jsonify({"message": "Book hidden successfully"}), 204  # Return 204 No Content
+        return jsonify({"message": "Book hidden successfully"}), 200  # Return 204 No Content
 
     except Exception as e:
         db.rollback()  # Ensure the session is rolled back if there's an error

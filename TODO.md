@@ -4,17 +4,17 @@
 - [ ] Test API
     - [ ] Create API collection
     - [ ] Test all requests
-        - [ ] Book requests
-            - [ ] Create new book
-            - [ ] Show all books
-                - [ ] Fix bug where types shown are always the same as the first in the list
-            - [ ] Show specific book
-                - [ ] Fix bug where types shown are always the same as the first in the list
-            - [ ] Update a book
-            - [ ] Delete a book
-        - [ ] Book types requests
-            - [ ] Show all book types
-            - [ ] show specific book type
+        - [x] Book requests
+            - [x] Create new book
+            - [x] Show all books
+                - [x] Fix bug where types shown are always the same as the first in the list
+            - [x] Show specific book
+                - [x] Fix bug where types shown are always the same as the first in the list
+            - [x] Update a book
+            - [x] Delete a book
+        - [x] Book types requests
+            - [x] Show all book types
+            - [x] show specific book type
         - [ ] Customer requests
             - [ ] Create customer
             - [ ] Show all customers

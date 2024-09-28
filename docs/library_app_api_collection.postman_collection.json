@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "23b4e9a1-b61e-4bd5-a8fe-12a23f5123f0",
+		"name": "library_app_api_collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16060589"
+	},
+	"item": [
+		{
+			"name": "All books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}books",
+					"host": [
+						"{{SERVER}}books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All books Types",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}book_types",
+					"host": [
+						"{{SERVER}}book_types"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Specific Book Type",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}books",
+					"host": [
+						"{{SERVER}}books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Specific Book",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}books/{BookID}",
+					"host": [
+						"{{SERVER}}books"
+					],
+					"path": [
+						"{BookID}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Book",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": \r\n  \"year_published\": \r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}books/{BookID}",
+					"host": [
+						"{{SERVER}}books"
+					],
+					"path": [
+						"{BookID}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Book",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": ,\r\n  \"year_published\": \r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER}}books",
+					"host": [
+						"{{SERVER}}books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Book",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{SERVER}}books/{BookID}",
+					"host": [
+						"{{SERVER}}books"
+					],
+					"path": [
+						"{BookID}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER",
+			"value": "http://127.0.0.1:5000/api/"
+		},
+		{
+			"key": "BookID",
+			"value": "{{BookID}}"
+		}
+	]
+}

@@ -1,0 +1,102 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "library_app_api_collection",
+    "collectionId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+    "dateExported": "2024-09-28T12:12:15.125Z",
+    "version": "1.2",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "1e6be093-7c18-422a-bf3e-779bf3551768",
+            "colId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+            "containerId": "",
+            "name": "All books",
+            "url": "{{SERVER}}books",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-09-28T09:38:02.014Z",
+            "modified": "2024-09-28T12:10:58.006Z",
+            "headers": []
+        },
+        {
+            "_id": "03b472e4-be59-4379-a2e5-30c5f1e8bdc2",
+            "colId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+            "containerId": "",
+            "name": "Specific Book",
+            "url": "{{SERVER}}books/{BookID}",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-09-28T09:39:04.987Z",
+            "modified": "2024-09-28T10:37:08.770Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "BookID",
+                    "value": "",
+                    "isPath": true
+                }
+            ]
+        },
+        {
+            "_id": "8fddf77a-930c-475e-9563-b583fa91e00b",
+            "colId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+            "containerId": "",
+            "name": "New Book",
+            "url": "{{SERVER}}books",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-09-28T10:38:21.983Z",
+            "modified": "2024-09-28T11:26:07.759Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "  {\n    \"author\": \"\",\n    \"title\": \"\",\n    \"type\": ,\n    \"year_published\": \n  }",
+                "form": []
+            }
+        },
+        {
+            "_id": "4e8ed8a2-f620-4f31-8dbb-7c870668f89b",
+            "colId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+            "containerId": "",
+            "name": "Delete Book",
+            "url": "{{SERVER}}books/{BookID}",
+            "method": "DELETE",
+            "sortNum": 30000,
+            "created": "2024-09-28T11:39:11.462Z",
+            "modified": "2024-09-28T11:39:39.790Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "BookID",
+                    "value": "",
+                    "isPath": true
+                }
+            ]
+        },
+        {
+            "_id": "86fc2d77-1909-4336-88fb-951b83e69405",
+            "colId": "b1dd8cd5-6512-4ab1-aa30-19926b521ff1",
+            "containerId": "",
+            "name": "Update book",
+            "url": "{{SERVER}}books/{BookID}",
+            "method": "PUT",
+            "sortNum": 40000,
+            "created": "2024-09-28T11:36:59.165Z",
+            "modified": "2024-09-28T11:37:43.782Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "BookID",
+                    "value": "",
+                    "isPath": true
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "  {\n    \"author\": \"\",\n    \"title\": \"\",\n    \"type\": ,\n    \"year_published\":  \n  }",
+                "form": []
+            }
+        }
+    ],
+    "ref": "qC3QgJtdgCtiwi2aCQ6cotlVb27HzQiWTYdAgAs7nO_zjl4KQ0vjkxY-rFNM4kn463-0elTIL60QzSzUc7ILig"
+}
