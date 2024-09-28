@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 from ..models import Book
 from ...database import get_db, BookType 
 
@@ -51,15 +52,15 @@ def create_book():
 @book_routes_bp.route('/<int:book_id>', methods=['GET'])
 def get_book(book_id):
     db: Session = next(get_db())
-    book = db.query(Book).filter(Book.id == book_id).first()
-    booktype = db.query(BookType).filter(BookType.id == Book.book_type_id).first()
+    book = db.query(Book).options(joinedload(Book.book_type)).filter(Book.id == book_id).first()
+    
     if book:
         return jsonify({
             "id": book.id,
             "title": book.title,
             "author": book.author,
             "year_published": book.year_published,
-            "type": booktype.type,  # Display the enum name (e.g., "FICTION" or "NONFICTION")
+            "type": book.book_type.type if book.book_type else None,  # Access the joined book_type
             "hidden": book.hidden
         }), 200
     return jsonify({"error": "Book not found"}), 404
@@ -67,18 +68,19 @@ def get_book(book_id):
 @book_routes_bp.route('/', methods=['GET'])
 def get_all_books():
     db: Session = next(get_db())
-    books = db.query(Book).filter(Book.hidden == False).all()
-    booktype = db.query(BookType).filter(BookType.id == Book.book_type_id).first()
+    books = db.query(Book).options(joinedload(Book.book_type)).filter(Book.hidden == False).all()  # Use joinedload
+
     books_list = [
         {
             "id": book.id,
             "title": book.title,
             "author": book.author,
             "year_published": book.year_published,
-            "type": booktype.type,
+            "type": book.book_type.type if book.book_type else None,  # Access the joined book_type
             "hidden": book.hidden
         } for book in books
     ]
+    
     return jsonify(books_list), 200
 
 @book_routes_bp.route('/<int:book_id>', methods=['PUT'])
