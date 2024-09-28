@@ -52,9 +52,19 @@ def create_book():
 @book_routes_bp.route('/<int:book_id>', methods=['GET'])
 def get_book(book_id):
     db: Session = next(get_db())
+    
+    # Get the showHidden parameter from the request, default to False
+    show_hidden = request.args.get('showHidden', 'false').lower() in ['true', '1']
+    
+    # Query the book with the given ID
     book = db.query(Book).options(joinedload(Book.book_type)).filter(Book.id == book_id).first()
     
+    # Check if the book exists
     if book:
+        # If showHidden is False, check if the book is hidden
+        if not show_hidden and book.hidden:
+            return jsonify({"error": "Book not found"}), 404
+        
         return jsonify({
             "id": book.id,
             "title": book.title,
@@ -63,13 +73,35 @@ def get_book(book_id):
             "type": book.book_type.type if book.book_type else None,  # Access the joined book_type
             "hidden": book.hidden
         }), 200
+    
     return jsonify({"error": "Book not found"}), 404
+
 
 @book_routes_bp.route('/', methods=['GET'])
 def get_all_books():
     db: Session = next(get_db())
-    books = db.query(Book).options(joinedload(Book.book_type)).filter(Book.hidden == False).all()  # Use joinedload
+    
+    # Get the showHidden parameter from the request, default to False
+    show_hidden = request.args.get('showHidden', 'false').lower() in ['true', '1']
+    
+    # Get the hiddenOnly parameter from the request, default to None
+    hidden_only = request.args.get('hiddenOnly', None)
 
+    # Start the query
+    query = db.query(Book).options(joinedload(Book.book_type))
+
+    # Apply the showHidden logic
+    if not show_hidden:
+        query = query.filter(Book.hidden == False)  # Only show non-hidden books by default
+
+    # Apply hiddenOnly filter if provided
+    if hidden_only in ['1', 'true']:
+        query = query.filter(Book.hidden == True)
+
+    # Execute the query
+    books = query.all()
+
+    # Build the response
     books_list = [
         {
             "id": book.id,
@@ -82,6 +114,8 @@ def get_all_books():
     ]
     
     return jsonify(books_list), 200
+
+
 
 @book_routes_bp.route('/<int:book_id>', methods=['PUT'])
 def update_book(book_id):

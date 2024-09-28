@@ -15,6 +15,18 @@
 					"raw": "{{SERVER}}books",
 					"host": [
 						"{{SERVER}}books"
+					],
+					"query": [
+						{
+							"key": "showHidden",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "hiddenOnly",
+							"value": "1",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -60,6 +72,13 @@
 					],
 					"path": [
 						"{BookID}"
+					],
+					"query": [
+						{
+							"key": "showHidden",
+							"value": "1",
+							"disabled": true
+						}
 					]
 				}
 			},

@@ -5,16 +5,16 @@
     - [ ] Create API collection
     - [ ] Test all requests
         - [x] Book requests
-            - [x] Create new book
-            - [x] Show all books
-                - [x] Fix bug where types shown are always the same as the first in the list
-            - [x] Show specific book
-                - [x] Fix bug where types shown are always the same as the first in the list
-            - [x] Update a book
-            - [x] Delete a book
-        - [x] Book types requests
-            - [x] Show all book types
-            - [x] show specific book type
+            - [x] Create new book - _28/09/2024_
+            - [x] Show all books - _28/09/2024_
+                - [x] Fix bug where types shown are always the same as the first in the list - _28/09/2024_
+            - [x] Show specific book - _28/09/2024_
+                - [x] Fix bug where types shown are always the same as the first in the list - 28/09/2024
+            - [x] Update a book - _28/09/2024_
+            - [x] Delete a book - _28/09/2024_
+        - [x] Book types requests - _28/09/2024_
+            - [x] Show all book types - _28/09/2024_
+            - [x] show specific book type - _28/09/2024_
         - [ ] Customer requests
             - [ ] Create customer
             - [ ] Show all customers
@@ -27,7 +27,13 @@
             - [ ] Update a loan
             - [ ] Delete a loan
 - [ ] Add parameters to the requests
-    - [ ] Add show hidden boolean parameter to the get requests
+    - [ ] Add show hidden boolean parameter to the get 
+        - [x] Add the parameter to the book get requests - _28/09/2024_
+        - [ ] Add the parameter to the customers get requests
+    - [ ] Add show only hidden boolean parameter to the get
+        - [x] Add the parameter to the book get requests - _28/09/2024_
+        - [ ] Add the parameter to the customers get requests
+    requests
 - [ ] Add bulk requests
     - [ ] Bulk upload of books
     - [ ] Bulk delete of books
