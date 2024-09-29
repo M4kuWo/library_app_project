@@ -1,6 +1,7 @@
 # TODO
 
 ## Backend
+- [x] Implement a migrations system __(alembic module)__ to make changes on the database structure _29/09/2024_
 - [ ] Test API
     - [ ] Create API collection
     - [ ] Test all requests

@@ -9,14 +9,14 @@ class Loan(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     book_id = Column(Integer, ForeignKey('books.id'), nullable=False)
-    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     loan_date = Column(DateTime, default=datetime.utcnow, nullable=False)
     return_date = Column(DateTime, nullable=True)
     hidden = Column(Boolean, default=False)
 
-    # Relationships with Book and Customer models
+    # Relationships with Book and User models
     book = relationship("Book")
-    customer = relationship("Customer")
+    user = relationship("User")
 
     def __repr__(self):
-        return f"<Loan(book_id={self.book_id}, customer_id={self.customer_id}, loan_date={self.loan_date})>"
+        return f"<Loan(book_id={self.book_id}, user_id={self.user_id}, loan_date={self.loan_date})>"

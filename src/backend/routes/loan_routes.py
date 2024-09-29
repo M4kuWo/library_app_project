@@ -11,7 +11,7 @@ def create_loan():
     new_loan = Loan(
         id=None,
         book_id=data['book_id'],
-        customer_id=data['customer_id'],
+        user_id=data['user_id'],
         loan_date=data['loan_date'],
         return_date=None,
         hidden=False
@@ -30,7 +30,7 @@ def get_loan(loan_id):
         return jsonify({
             "id": loan.id,
             "book_id": loan.book_id,
-            "customer_id": loan.customer_id,
+            "user_id": loan.user_id,
             "loan_date": loan.loan_date,
             "return_date": loan.return_date,
             "hidden": loan.hidden
@@ -45,7 +45,7 @@ def get_all_loans():
         {
             "id": loan.id,
             "book_id": loan.book_id,
-            "customer_id": loan.customer_id,
+            "user_id": loan.user_id,
             "loan_date": loan.loan_date,
             "return_date": loan.return_date,
             "hidden": loan.hidden
@@ -62,7 +62,7 @@ def update_loan(loan_id):
         return jsonify({"error": "Loan not found"}), 404
 
     updated_loan.book_id = data['book_id']
-    updated_loan.customer_id = data['customer_id']
+    updated_loan.user_id = data['user_id']
     updated_loan.loan_date = data['loan_date']
     updated_loan.return_date = data.get('return_date')
     updated_loan.hidden = data.get('hidden', False)

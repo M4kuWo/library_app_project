@@ -1,4 +1,3 @@
-from .customers import Customer
+from .users import User
 from .books import Book
-# from .book_types import BookType, BookTypeEnum
 from .loans import Loan

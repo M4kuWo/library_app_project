@@ -1,5 +1,5 @@
 from flask import Flask
-from .routes import book_routes_bp, book_types_routes_bp, customer_routes_bp, loan_routes_bp
+from .routes import book_routes_bp, book_types_routes_bp, user_routes_bp, loan_routes_bp
 from ..database import init_db 
 
 app = Flask(__name__)
@@ -10,7 +10,7 @@ init_db()
 # Register blueprints for different modules
 app.register_blueprint(book_routes_bp, url_prefix='/api/books')
 app.register_blueprint(book_types_routes_bp, url_prefix='/api/book_types')
-app.register_blueprint(customer_routes_bp, url_prefix='/api/customers')
+app.register_blueprint(user_routes_bp, url_prefix='/api/users')
 app.register_blueprint(loan_routes_bp, url_prefix='/api/loans')
 
 @app.route('/')
