@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from ..models import User
-from ...database import get_db, UserProfile
+from ...database import get_db, UserProfile, City
 
 user_routes_bp = Blueprint('user_routes', __name__)
 

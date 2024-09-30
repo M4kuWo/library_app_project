@@ -109,6 +109,58 @@
 					"response": []
 				},
 				{
+					"name": "Create Books in Bulk",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"title\": \"\",\r\n        \"author\": \"\",\r\n        \"year_published\": ,\r\n        \"type\": \r\n    },\r\n    {\r\n        \"title\": \"\",\r\n        \"author\": \"\",\r\n        \"year_published\": ,\r\n        \"type\": \r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}books/bulk",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"path": [
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Books in Bulk",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{Book_ID},{Book_ID}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}books/bulk_delete",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"path": [
+								"bulk_delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete Book",
 					"request": {
 						"method": "DELETE",
@@ -150,12 +202,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{SERVER}}book_type/{book_type_id}",
+							"raw": "{{SERVER}}book_types/{Book_Type_ID}",
 							"host": [
-								"{{SERVER}}book_type"
+								"{{SERVER}}book_types"
 							],
 							"path": [
-								"{book_type_id}"
+								"{Book_Type_ID}"
 							]
 						}
 					},
@@ -219,7 +271,7 @@
 				{
 					"name": "Delete User",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{SERVER}}users/{User_ID}",
@@ -391,6 +443,101 @@
 							"raw": "{{SERVER}}loans",
 							"host": [
 								"{{SERVER}}loans"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "hiddenOnly",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Loans in Bulk",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{Loan_ID},{Loan_ID}]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}loans/bulk",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Loans in Bulk",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"book_id\": ,\r\n        \"user_id\": ,\r\n        \"loan_date\": \"\",\r\n        \"expected_return_date\": \"\",\r\n        \"actual_return_date\": null\r\n    },\r\n    {\r\n        \"book_id\": ,\r\n        \"user_id\": ,\r\n        \"loan_date\": \"\",\r\n        \"expected_return_date\": \"\",\r\n        \"actual_return_date\": null\r\n    },\r\n    {\r\n        \"book_id\": ,\r\n        \"user_id\": ,\r\n        \"loan_date\": \"\",\r\n        \"expected_return_date\": \"\",\r\n        \"actual_return_date\": null\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}loans/bulk",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Loan",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans",
+							"host": [
+								"{{SERVER}}loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Loan",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans/{Loan_ID}",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"{Loan_ID}"
 							]
 						}
 					},
@@ -400,6 +547,55 @@
 					"name": "Specific Loan",
 					"request": {
 						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans/{Loan_ID}",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"{Loan_ID}"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return Loan",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans/{Loan_ID}/return",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"{Loan_ID}",
+								"return"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Loan",
+					"request": {
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{SERVER}}loans/{Loan_ID}",

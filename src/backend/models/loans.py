@@ -11,7 +11,8 @@ class Loan(Base):
     book_id = Column(Integer, ForeignKey('books.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     loan_date = Column(DateTime, default=datetime.utcnow, nullable=False)
-    return_date = Column(DateTime, nullable=True)
+    expected_return_date = Column(DateTime, nullable=True)
+    actual_return_date = Column(DateTime, nullable=True)
     hidden = Column(Boolean, default=False)
 
     # Relationships with Book and User models

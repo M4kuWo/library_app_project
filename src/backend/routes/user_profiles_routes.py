@@ -17,7 +17,7 @@ def get_all_user_profiles():
     } for bt in user_profiles]), 200
 
 
-@user_profiles_routes_bp.route('/<int:book_type_id>', methods=['GET'])
+@user_profiles_routes_bp.route('/<int:user_profile_id>', methods=['GET'])
 def get_user_profile(user_profile_id):
     db: Session = next(get_db())
     user_profile = db.query(UserProfile).filter_by(id=user_profile_id, hidden=False).first()

@@ -13,6 +13,8 @@ app.register_blueprint(book_types_routes_bp, url_prefix='/api/book_types')
 app.register_blueprint(user_routes_bp, url_prefix='/api/users')
 app.register_blueprint(user_profiles_routes_bp, url_prefix='/api/user_profiles')
 app.register_blueprint(loan_routes_bp, url_prefix='/api/loans')
+app.register_blueprint(cities_routes_bp, url_prefix='/api/cities')
+
 
 
 @app.route('/')
