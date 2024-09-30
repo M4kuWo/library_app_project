@@ -229,3 +229,41 @@ def bulk_create_books():
     db.commit()
     
     return jsonify({"message": "Books created successfully", "books": created_books}), 201
+
+
+@book_routes_bp.route('/bulk_delete', methods=['DELETE'])
+def bulk_delete_books():
+    data = request.json
+
+    # Validate the request body
+    if not isinstance(data, list):
+        return jsonify({"error": "Request body must be a list of book IDs"}), 400
+
+    if not all(isinstance(book_id, int) for book_id in data):
+        return jsonify({"error": "All book IDs must be integers"}), 400
+
+    db: Session = next(get_db())
+
+    # Query books whose IDs are in the provided list
+    books_to_hide = db.query(Book).filter(Book.id.in_(data)).all()
+
+    # Extract the IDs of the found books
+    found_ids = {book.id for book in books_to_hide}
+
+    # Determine which IDs were not found by subtracting found IDs from the provided IDs
+    missing_ids = set(data) - found_ids
+
+    # If there are missing IDs, return an error with the list of unrecognized IDs
+    if missing_ids:
+        return jsonify({
+            "error": "Some book IDs were not recognized",
+            "unrecognized_ids": list(missing_ids)
+        }), 404
+
+    # If all IDs are valid, mark the books as hidden
+    for book in books_to_hide:
+        book.hidden = True
+
+    db.commit()
+
+    return jsonify({"message": f"{len(books_to_hide)} books hidden successfully"}), 200

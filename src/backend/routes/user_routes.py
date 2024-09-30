@@ -224,3 +224,41 @@ def bulk_create_users():
     db.commit()
     
     return jsonify({"message": "Users created successfully", "users": created_users}), 201
+
+
+@user_routes_bp.route('/bulk_delete', methods=['DELETE'])
+def bulk_delete_users():
+    data = request.json
+
+    # Validate the request body
+    if not isinstance(data, list):
+        return jsonify({"error": "Request body must be a list of user IDs"}), 400
+    
+    if not all(isinstance(user_id, int) for user_id in data):
+        return jsonify({"error": "All user IDs must be integers"}), 400
+    
+    db: Session = next(get_db())
+
+    # Query users whose IDs are in the provided list
+    users_to_hide = db.query(User).filter(User.id.in_(data)).all()
+
+    # Extract the IDs of the found users
+    found_ids = {user.id for user in users_to_hide}
+    
+    # Determine which IDs were not found by subtracting found IDs from the provided IDs
+    missing_ids = set(data) - found_ids
+
+    # If there are missing IDs, return an error with the list of unrecognized IDs
+    if missing_ids:
+        return jsonify({
+            "error": "Some user IDs were not recognized",
+            "unrecognized_ids": list(missing_ids)
+        }), 404
+
+    # If all IDs are valid, mark the users as hidden
+    for user in users_to_hide:
+        user.hidden = True
+
+    db.commit()
+
+    return jsonify({"message": f"{len(users_to_hide)} users hidden successfully"}), 200

@@ -165,7 +165,183 @@
 		},
 		{
 			"name": "Users",
-			"item": []
+			"item": [
+				{
+					"name": "All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}users",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "hiddenOnly",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}users/{User_ID}",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"{User_ID}"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}users/{User_ID}",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"{User_ID}"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n  \"name\": \"\",\r\n  \"email\": \"\",\r\n  \"city\": ,\r\n  \"age\": ,\r\n  \"profile\": \r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users",
+							"host": [
+								"{{SERVER}}users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Users in bulk",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"name\": \"\",\r\n        \"email\": \"\",\r\n        \"city\": ,\r\n        \"age\": ,\r\n        \"profile\": \r\n    },\r\n    {\r\n        \"name\": \"\",\r\n        \"email\": \"\",\r\n        \"city\": ,\r\n        \"age\": ,\r\n        \"profile\": \r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users/bulk",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Users in bulk",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[{User_ID}, {Another_USer_ID},]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users/bulk_delete",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"bulk_delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n  \"name\": \"\",\r\n  \"email\": \"\",\r\n  \"city\": ,\r\n  \"age\": ,\r\n  \"profile\": \r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users/{User_ID}",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"{User_ID}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "User Profiles",
@@ -205,7 +381,75 @@
 		},
 		{
 			"name": "Loans",
-			"item": []
+			"item": [
+				{
+					"name": "All Loans",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans",
+							"host": [
+								"{{SERVER}}loans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific Loan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}loans/{Loan_ID}",
+							"host": [
+								"{{SERVER}}loans"
+							],
+							"path": [
+								"{Loan_ID}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cities",
+			"item": [
+				{
+					"name": "All Cities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}cities",
+							"host": [
+								"{{SERVER}}cities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific City",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}cities/{City_ID}",
+							"host": [
+								"{{SERVER}}cities"
+							],
+							"path": [
+								"{City_ID}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [
