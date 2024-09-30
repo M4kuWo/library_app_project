@@ -7,148 +7,205 @@
 	},
 	"item": [
 		{
-			"name": "All books",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER}}books",
-					"host": [
-						"{{SERVER}}books"
-					],
-					"query": [
-						{
-							"key": "showHidden",
-							"value": "1",
-							"disabled": true
+			"name": "Books",
+			"item": [
+				{
+					"name": "All books",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}books",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "hiddenOnly",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}books/{BookID}",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"path": [
+								"{BookID}"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": \r\n  \"year_published\": \r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "hiddenOnly",
-							"value": "1",
-							"disabled": true
+						"url": {
+							"raw": "{{SERVER}}books/{BookID}",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"path": [
+								"{BookID}"
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "All books Types",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER}}book_types",
-					"host": [
-						"{{SERVER}}book_types"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Specific Book Type",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER}}books",
-					"host": [
-						"{{SERVER}}books"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Specific Book",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER}}books/{BookID}",
-					"host": [
-						"{{SERVER}}books"
-					],
-					"path": [
-						"{BookID}"
-					],
-					"query": [
-						{
-							"key": "showHidden",
-							"value": "1",
-							"disabled": true
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Book",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": \r\n  \"year_published\": \r\n  }",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{SERVER}}books/{BookID}",
-					"host": [
-						"{{SERVER}}books"
-					],
-					"path": [
-						"{BookID}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Book",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": ,\r\n  \"year_published\": \r\n  }",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "Create Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": ,\r\n  \"year_published\": \r\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}books",
+							"host": [
+								"{{SERVER}}books"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{SERVER}}books",
-					"host": [
-						"{{SERVER}}books"
-					]
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}books/{BookID}",
+							"host": [
+								"{{SERVER}}books"
+							],
+							"path": [
+								"{BookID}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Delete Book",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{SERVER}}books/{BookID}",
-					"host": [
-						"{{SERVER}}books"
-					],
-					"path": [
-						"{BookID}"
-					]
+			"name": "Book Types",
+			"item": [
+				{
+					"name": "All books Types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}book_types",
+							"host": [
+								"{{SERVER}}book_types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific Book Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}book_type/{book_type_id}",
+							"host": [
+								"{{SERVER}}book_type"
+							],
+							"path": [
+								"{book_type_id}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Users",
+			"item": []
+		},
+		{
+			"name": "User Profiles",
+			"item": [
+				{
+					"name": "All User Profiles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}user_profiles",
+							"host": [
+								"{{SERVER}}user_profiles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific User Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}user_profiles/{user_profile_id}",
+							"host": [
+								"{{SERVER}}user_profiles"
+							],
+							"path": [
+								"{user_profile_id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Loans",
+			"item": []
 		}
 	],
 	"variable": [

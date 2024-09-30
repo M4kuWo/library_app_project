@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 from ...database import Base
 
 # User model for the database
@@ -7,8 +8,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    city = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    city = Column(Integer, ForeignKey('cities.id'), nullable=False)
     age = Column(Integer, nullable=False)
+    profile = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
     hidden = Column(Boolean, default=False)
 
     def __repr__(self):

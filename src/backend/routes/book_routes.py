@@ -183,3 +183,49 @@ def delete_book(book_id):
         db.rollback()  # Ensure the session is rolled back if there's an error
         return jsonify({"error": str(e)}), 400
 
+@book_routes_bp.route('/bulk', methods=['POST'])
+def bulk_create_books():
+    data = request.json
+    if not isinstance(data, list):
+        return jsonify({"error": "Request body must be a list of books"}), 400
+
+    db: Session = next(get_db())
+    created_books = []
+
+    for book_data in data:
+        try:
+            # Validate that the book type exists in the BookType model
+            book_type_value = book_data['type']  # Expecting 'type' in the request body
+            
+            # Query the BookType to check if the provided type exists as an ID
+            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
+            if not book_type:
+                return jsonify({"error": f"Invalid book type ID: {book_type_value}"}), 400
+
+            # Create a new book with the validated book type
+            new_book = Book(
+                title=book_data['title'],
+                author=book_data['author'],
+                year_published=book_data['year_published'],
+                book_type_id=book_type_value,  # Use the valid book type ID
+                hidden=False
+            )
+
+            db.add(new_book)
+            created_books.append({
+                "id": new_book.id,
+                "title": new_book.title,
+                "author": new_book.author,
+                "year_published": new_book.year_published,
+                "type": new_book.book_type_id,  # Send the type as 'type'
+                "hidden": new_book.hidden
+            })
+
+        except KeyError as e:
+            return jsonify({"error": f"Missing field in one of the book entries: {str(e)}"}), 400
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    db.commit()
+    
+    return jsonify({"message": "Books created successfully", "books": created_books}), 201
