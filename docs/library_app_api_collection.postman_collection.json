@@ -10,7 +10,7 @@
 			"name": "Books",
 			"item": [
 				{
-					"name": "All books",
+					"name": "All Books",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -76,7 +76,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"cover_image\": \"\",\r\n    \"year_published\": ,\r\n    \"book_type_id\": ,  \r\n    \"hidden\": \r\n}\r\n",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"cover_image\": \"\",\r\n    \"year_published\": ,\r\n    \"number_of_pages\": , //This might change the book type depending of the length (Short, Medium, Long)  \r\n    \"hidden\": \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -112,7 +112,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"type\": ,      \r\n    \"year_published\": ,\r\n    \"cover_image\": \"\" \r\n}\r\n",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"number_of_pages\": ,  //This will determine the book type (Short, Medium, Long)    \r\n    \"year_published\": ,\r\n    \"cover_image\": \"\" \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -145,7 +145,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"type\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": \r\n    },\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"type\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": \r\n    }\r\n  ]\r\n\r\n",
+							"raw": "[\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"number_of_pages\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": 0\r\n    },\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"number_of_pages\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": 0\r\n    }\r\n  ]\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -801,6 +801,42 @@
 							],
 							"path": [
 								"{City_ID}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}categories",
+							"host": [
+								"{{SERVER}}categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Specific Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}categories/{CategoryID}",
+							"host": [
+								"{{SERVER}}categories"
+							],
+							"path": [
+								"{CategoryID}"
 							]
 						}
 					},

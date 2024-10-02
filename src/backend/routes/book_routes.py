@@ -225,14 +225,6 @@ def update_book(book_id):
         if not updated_book:
             return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
 
-        # Update book type if provided
-        if 'type' in data:
-            book_type_value = data['type']
-            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-            if not book_type:
-                return jsonify({"error": "Invalid book type ID"}), HTTPStatus.BAD_REQUEST
-            updated_book.book_type_id = book_type_value
-
         # Update category if provided
         if 'category' in data:
             category_value = data['category']
@@ -240,6 +232,13 @@ def update_book(book_id):
             if not category:
                 return jsonify({"error": "Invalid category ID"}), HTTPStatus.BAD_REQUEST
             updated_book.category = category_value
+
+        # Update number of pages if provided and determine book type if it changes
+        if 'number_of_pages' in data:
+            number_of_pages = data['number_of_pages']
+            updated_book.number_of_pages = number_of_pages
+            # Only update the book type if the number of pages changes
+            updated_book.book_type_id = get_book_type_id(number_of_pages, db)  # Update book type based on pages
 
         # Update other fields
         if 'title' in data:
@@ -268,7 +267,8 @@ def update_book(book_id):
             "cover_image": updated_book.cover_image,
             "year_published": updated_book.year_published,
             "book_type": book_type.type if book_type else None,
-            "hidden": updated_book.hidden
+            "hidden": int(updated_book.hidden),  # Convert hidden to 1 or 0
+            "number_of_pages": updated_book.number_of_pages  # Include number of pages in the response
         }
 
         return jsonify({"message": "Book updated successfully", "book": response_data}), HTTPStatus.OK
