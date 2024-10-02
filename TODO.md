@@ -63,13 +63,22 @@
     - [x] Test the API again _02/10/2024_
 - [ ] Add a folder with examples to the api collection so that on first app run you can easily create multiple entries on all models
 - [ ] Implement a function to recover a forgotten password
+- [ ] Find an easy way to get book cover images (maybe a free API or book cover image database) and implement it
 
 ## Frontend
 
 - [ ] Research examples of existing websites
 - [ ] Write a plan for the website
+- [ ] Find visual assets
+    - [ ] Logo
+    - [ ] Background images
+    - [ ] Favicon
+    - [ ] Extra images
 
 
 ## README File
 
 - [ ] write an elaborate and detailed README file
+
+## Finishing touches
+- [ ] Update the requirements.txt file and make sure all necessary modules and versions are included
