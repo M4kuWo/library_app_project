@@ -1,0 +1,17 @@
+[
+    { "id": 1, "category": "Fiction" },
+    { "id": 2, "category": "Non-Fiction" },
+    { "id": 3, "category": "Science Fiction" },
+    { "id": 4, "category": "Fantasy" },
+    { "id": 5, "category": "Mystery" },
+    { "id": 6, "category": "Thriller" },
+    { "id": 7, "category": "Romance" },
+    { "id": 8, "category": "Horror" },
+    { "id": 9, "category": "Biography" },
+    { "id": 10, "category": "History" },
+    { "id": 11, "category": "Self-Help" },
+    { "id": 12, "category": "Children's" },
+    { "id": 13, "category": "Young Adult" },
+    { "id": 14, "category": "Poetry" },
+    { "id": 15, "category": "Cookbooks" }
+]

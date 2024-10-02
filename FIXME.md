@@ -1,1 +1,2 @@
-- [ ] Loan routes receive a 404 response
+- [x] Loan routes receive a 404 response _02/10/2024_
+    - the issue was the routes had /loans twice (once in the app.py file set as api/loans and twice in the loans_routes.py file set as /loans) and I was calling it once in the URL

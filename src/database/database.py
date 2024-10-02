@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
+
 # Create an engine (for SQLite)
 DATABASE_PATH = "sqlite:///src/database/library.db"
 engine = create_engine(DATABASE_PATH, echo=True)
@@ -21,6 +22,14 @@ class BookType(Base):
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String, nullable=False)
     max_loan_duration = Column(Integer, nullable=False)
+    hidden = Column(Boolean, default=False)
+
+# Define the ORM model for categories
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, index=True)
+    category = Column(String, nullable=False)
     hidden = Column(Boolean, default=False)
 
 # Define the ORM model for user_profiles
@@ -54,6 +63,12 @@ def load_cities_from_json():
         cities_data = json.load(f)
     return cities_data
 
+def load_categories_from_json():
+    json_file_path = os.path.join(os.path.dirname(__file__), 'categories.json')
+    with open(json_file_path, 'r', encoding='utf-8') as f:
+        categories_data = json.load(f)
+    return categories_data
+
 # Initialize the database and create tables if they don't exist
 def init_db():
     # Create all tables based on the models
@@ -73,8 +88,9 @@ def init_db():
         # Initialize user profiles if the table is empty
         if session.query(UserProfile).count() == 0:
             user_profiles = [
-                UserProfile(id=1, name="admin", hidden=False),
-                UserProfile(id=2, name="user", hidden=False)
+                UserProfile(id=1, name="superadmin", hidden=False),
+                UserProfile(id=2, name="admin", hidden=False),
+                UserProfile(id=3, name="user", hidden=False),
             ]
             session.add_all(user_profiles)
 
@@ -83,6 +99,30 @@ def init_db():
             cities_data = load_cities_from_json()
             cities = [City(id=city['id'], name=city['name']) for city in cities_data]
             session.add_all(cities)
+
+        # Initialize categories if the table is empty
+        if session.query(Category).count() == 0:
+            categories_data = load_categories_from_json()
+            categories = [Category(id=category['id'], category=category['category']) for category in categories_data]
+            session.add_all(categories)
+
+        # Initialize user if the table is empty and add a superademin
+        from ..backend.models import User  # Move the import here to avoid circular imports
+    
+        if session.query(User).count() == 0:
+            user = [
+                User(
+                    id=1, 
+                    name="superuser", 
+                    email="superuser@support.com", 
+                    city=15, 
+                    age=33, 
+                    profile=1, 
+                    hidden=False, 
+                    hashed_password="$2b$12$m4U2LWCOpVJ3c2UcmrAPFesci.rYINEFU95cDnKZzz/LMspnAPRmK"
+                )
+            ]
+            session.add_all(user)
 
         session.commit()
 

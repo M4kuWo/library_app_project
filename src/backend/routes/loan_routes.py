@@ -6,7 +6,7 @@ from datetime import datetime
 
 loan_routes_bp = Blueprint('loan_routes', __name__)
 
-@loan_routes_bp.route('/loans', methods=['POST'])
+@loan_routes_bp.route('/', methods=['POST'])
 def create_loan():
     data = request.json
     required_fields = ['book_id', 'user_id', 'loan_date']
@@ -42,7 +42,7 @@ def create_loan():
     db.refresh(new_loan)
     return jsonify({"message": "Loan created successfully"}), 201
 
-@loan_routes_bp.route('/loans/<int:loan_id>', methods=['GET'])
+@loan_routes_bp.route('//<int:loan_id>', methods=['GET'])
 def get_loan(loan_id):
     db: Session = next(get_db())
     loan = db.query(Loan).filter(Loan.id == loan_id).first()
@@ -58,7 +58,7 @@ def get_loan(loan_id):
         }), 200
     return jsonify({"error": "Loan not found"}), 404
 
-@loan_routes_bp.route('/loans', methods=['GET'])
+@loan_routes_bp.route('/', methods=['GET'])
 def get_all_loans():
     db: Session = next(get_db())
     loans = db.query(Loan).filter(Loan.hidden == False).all()
@@ -75,7 +75,7 @@ def get_all_loans():
     ]
     return jsonify(loans_list), 200
 
-@loan_routes_bp.route('/loans/<int:loan_id>', methods=['PUT'])
+@loan_routes_bp.route('/<int:loan_id>', methods=['PUT'])
 def update_loan(loan_id):
     data = request.json
     db: Session = next(get_db())
@@ -105,7 +105,7 @@ def update_loan(loan_id):
     db.commit()
     return jsonify({"message": "Loan updated successfully"}), 200
 
-@loan_routes_bp.route('/loans/<int:loan_id>', methods=['DELETE'])
+@loan_routes_bp.route('/<int:loan_id>', methods=['DELETE'])
 def delete_loan(loan_id):
     db: Session = next(get_db())
     loan = db.query(Loan).filter(Loan.id == loan_id).first()
@@ -116,7 +116,7 @@ def delete_loan(loan_id):
     db.commit()
     return jsonify({"message": "Loan hidden successfully"}), 200
 
-@loan_routes_bp.route('/loans/bulk', methods=['POST'])
+@loan_routes_bp.route('/bulk', methods=['POST'])
 def bulk_create_loans():
     data = request.json
     if not isinstance(data, list):
@@ -171,7 +171,7 @@ def bulk_create_loans():
 
     return jsonify({"message": "Loans created successfully", "loans": created_loans}), 201
 
-@loan_routes_bp.route('/loans/bulk', methods=['DELETE'])
+@loan_routes_bp.route('/bulk', methods=['DELETE'])
 def bulk_delete_loans():
     data = request.json
     if not isinstance(data, list):
@@ -190,7 +190,7 @@ def bulk_delete_loans():
 
     return jsonify({"message": "Loans hidden successfully", "deleted_loans": deleted_loans}), 200
 
-    @loan_routes_bp.route('/loans/<int:loan_id>/return', methods=['PUT'])
+@loan_routes_bp.route('/loans/<int:loan_id>/return', methods=['PUT'])
 def return_loan(loan_id):
     db: Session = next(get_db())
     loan = db.query(Loan).filter(Loan.id == loan_id).first()

@@ -1,32 +1,57 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
-from sqlalchemy.orm import joinedload
-from ..models import Book
-from ...database import get_db, BookType 
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from ..models import Book, User
+from ...database import get_db, BookType, Category
+from http import HTTPStatus
 
 book_routes_bp = Blueprint('book_routes', __name__)
 
+def check_profile_level(required_level):
+    # Get the current user's identity from the JWT token
+    current_user_email = get_jwt_identity().get('email')
+    
+    db: Session = next(get_db())
+    current_user = db.query(User).filter(User.email == current_user_email).first()
+
+    if not current_user:
+        return False  # User not found
+
+    # Check if the current user's profile level is equal to or lower than the required level
+    return current_user.profile <= required_level
+
 @book_routes_bp.route('/', methods=['POST'])
+@jwt_required()
 def create_book():
+    if not check_profile_level(2):  # Only allow admin (profile <= 2) to create books
+        return jsonify({"error": "Unauthorized access"}), HTTPStatus.FORBIDDEN
+
     data = request.json
     try:
-        # Validate that the book type exists in the BookType model
-        book_type_value = data['type']  # Expecting 'type' in the request body
+        # Validate that the book type and category exist
+        book_type_value = data['type']
+        category_value = data['category']
         
         db: Session = next(get_db())
         
-        # Query the BookType to check if the provided type exists as an ID
+        # Check if the book type exists
         book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-        
         if not book_type:
-            return jsonify({"error": "Invalid book type ID"}), 400
+            return jsonify({"error": "Invalid book type ID"}), HTTPStatus.BAD_REQUEST
+        
+        # Check if the category exists
+        category = db.query(Category).filter(Category.id == category_value).first()
+        if not category:
+            return jsonify({"error": "Invalid category ID"}), HTTPStatus.BAD_REQUEST
 
-        # Create a new book with the validated book type
+        # Create a new book with validated book type and category
         new_book = Book(
             title=data['title'],
             author=data['author'],
+            category=category_value,
+            cover_image=data.get('cover_image'),
             year_published=data['year_published'],
-            book_type_id=book_type_value,  # Use the valid book type ID
+            book_type_id=book_type_value,
             hidden=False
         )
         
@@ -39,231 +64,252 @@ def create_book():
             "title": new_book.title,
             "author": new_book.author,
             "year_published": new_book.year_published,
-            "type": new_book.book_type_id,  # Send the type as 'type'
+            "type": new_book.book_type_id,
+            "category": category.category,
+            "cover_image": new_book.cover_image,
             "hidden": new_book.hidden
-        }}), 201
+        }}), HTTPStatus.CREATED
 
     except KeyError as e:
-        return jsonify({"error": f"Missing field: {str(e)}"}), 400
+        return jsonify({"error": f"Missing field: {str(e)}"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
 
+@book_routes_bp.route('/bulk', methods=['POST'])
+@jwt_required()
+def bulk_create_books():
+    if not check_profile_level(2):  # Only allow admin (profile <= 2) to create books
+        return jsonify({"error": "Unauthorized access"}), HTTPStatus.FORBIDDEN
 
-@book_routes_bp.route('/<int:book_id>', methods=['GET'])
-def get_book(book_id):
+    data = request.json
+    if not isinstance(data, list):
+        return jsonify({"error": "Request body must be a list of books"}), HTTPStatus.BAD_REQUEST
+
     db: Session = next(get_db())
-    
-    # Get the showHidden parameter from the request, default to False
-    show_hidden = request.args.get('showHidden', 'false').lower() in ['true', '1']
-    
-    # Query the book with the given ID
-    book = db.query(Book).options(joinedload(Book.book_type)).filter(Book.id == book_id).first()
-    
-    # Check if the book exists
-    if book:
-        # If showHidden is False, check if the book is hidden
-        if not show_hidden and book.hidden:
-            return jsonify({"error": "Book not found"}), 404
-        
-        return jsonify({
-            "id": book.id,
-            "title": book.title,
-            "author": book.author,
-            "year_published": book.year_published,
-            "type": book.book_type.type if book.book_type else None,  # Access the joined book_type
-            "hidden": book.hidden
-        }), 200
-    
-    return jsonify({"error": "Book not found"}), 404
+    created_books = []
 
+    try:
+        for book_data in data:
+            book_type_value = book_data['type']
+            category_value = book_data['category']
+
+            # Validate book type
+            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
+            if not book_type:
+                return jsonify({"error": f"Invalid book type ID: {book_type_value}"}), HTTPStatus.BAD_REQUEST
+
+            # Validate category
+            category = db.query(Category).filter(Category.id == category_value).first()
+            if not category:
+                return jsonify({"error": f"Invalid category ID: {category_value}"}), HTTPStatus.BAD_REQUEST
+
+            # Create the new book object
+            new_book = Book(
+                title=book_data['title'],
+                author=book_data['author'],
+                category=category_value,
+                cover_image=book_data.get('cover_image'),
+                year_published=book_data['year_published'],
+                book_type_id=book_type_value,
+                hidden=book_data.get('hidden', False)  # Set hidden with default False
+            )
+
+            # Add book to the session
+            db.add(new_book)
+            db.flush()  # Flush the session to assign the new book's ID
+
+            # Append the created book details to the response list
+            created_books.append({
+                "id": new_book.id,  # Now the ID will be available after flush
+                "title": new_book.title,
+                "author": new_book.author,
+                "year_published": new_book.year_published,
+                "type": new_book.book_type_id,
+                "category": category.category,
+                "cover_image": new_book.cover_image,
+                "hidden": new_book.hidden
+            })
+
+        # Commit the transaction after all books are processed
+        db.commit()
+
+        return jsonify({"message": "Books created successfully", "books": created_books}), HTTPStatus.CREATED
+
+    except KeyError as e:
+        db.rollback()
+        return jsonify({"error": f"Missing field in one of the book entries: {str(e)}"}), HTTPStatus.BAD_REQUEST
+    except Exception as e:
+        db.rollback()
+        return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
 
 @book_routes_bp.route('/', methods=['GET'])
 def get_all_books():
     db: Session = next(get_db())
-    
-    # Get the showHidden parameter from the request, default to False
-    show_hidden = request.args.get('showHidden', 'false').lower() in ['true', '1']
-    
-    # Get the hiddenOnly parameter from the request, default to None
-    hidden_only = request.args.get('hiddenOnly', None)
 
-    # Start the query
-    query = db.query(Book).options(joinedload(Book.book_type))
+    show_hidden = request.args.get('showHidden', default='0') == '1'
+    hidden_only = request.args.get('hiddenOnly', default='0') == '1'
 
-    # Apply the showHidden logic
-    if not show_hidden:
-        query = query.filter(Book.hidden == False)  # Only show non-hidden books by default
+    query = db.query(Book).filter(Book.hidden.is_(False))
 
-    # Apply hiddenOnly filter if provided
-    if hidden_only in ['1', 'true']:
-        query = query.filter(Book.hidden == True)
+    if hidden_only:
+        # Show only books that are hidden
+        query = db.query(Book).filter(Book.hidden.is_(True))
+    elif show_hidden:
+        # Show both hidden and non-hidden books
+        query = db.query(Book)
 
-    # Execute the query
     books = query.all()
 
-    # Build the response
-    books_list = [
-        {
-            "id": book.id,
-            "title": book.title,
-            "author": book.author,
-            "year_published": book.year_published,
-            "type": book.book_type.type if book.book_type else None,  # Access the joined book_type
-            "hidden": book.hidden
-        } for book in books
-    ]
-    
-    return jsonify(books_list), 200
+    books_list = [{
+        "id": book.id,
+        "title": book.title,
+        "author": book.author,
+        "year_published": book.year_published,
+        "type": book.book_type_id,
+        "category": book.category,
+        "cover_image": book.cover_image,
+        "hidden": 1 if book.hidden else 0
+    } for book in books]
 
+    return jsonify({"books": books_list}), HTTPStatus.OK
 
+@book_routes_bp.route('/<int:book_id>', methods=['GET'])
+def get_book(book_id):
+    db: Session = next(get_db())
+
+    show_hidden = request.args.get('showHidden', default='0') == '1'
+
+    # Filter the book by ID and hidden status based on show_hidden parameter
+    query = db.query(Book).filter(Book.id == book_id)
+
+    if not show_hidden:
+        query = query.filter(Book.hidden.is_(False))
+
+    book = query.one_or_none()
+
+    if not book:
+        return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
+
+    return jsonify({
+        "id": book.id,
+        "title": book.title,
+        "author": book.author,
+        "year_published": book.year_published,
+        "type": book.book_type_id,
+        "category": book.category,
+        "cover_image": book.cover_image,
+        "hidden": 1 if book.hidden else 0
+    }), HTTPStatus.OK
 
 @book_routes_bp.route('/<int:book_id>', methods=['PUT'])
+@jwt_required()
 def update_book(book_id):
+    if not check_profile_level(2):  # Only allow admin (profile <= 2) to update books
+        return jsonify({"error": "Unauthorized access"}), HTTPStatus.FORBIDDEN
+
     data = request.json
     try:
         db: Session = next(get_db())
         
-        # Find the book to update
         updated_book = db.query(Book).filter(Book.id == book_id).first()
         if not updated_book:
-            return jsonify({"error": "Book not found"}), 404
+            return jsonify({"error": "Book not found"}), HTTPStatus.NOT_FOUND
 
-        # Validate if the 'type' field exists in the request data
+        # Update book type if provided
         if 'type' in data:
-            book_type_value = data['type']  # Expecting 'type' in the request body
-            
-            # Query the BookType to check if the provided type exists as an ID
+            book_type_value = data['type']
             book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-
             if not book_type:
-                return jsonify({"error": "Invalid book type ID"}), 400
-            
-            # Update book type only if it's provided
+                return jsonify({"error": "Invalid book type ID"}), HTTPStatus.BAD_REQUEST
             updated_book.book_type_id = book_type_value
 
-        # Update fields only if they are provided in the request body
+        # Update category if provided
+        if 'category' in data:
+            category_value = data['category']
+            category = db.query(Category).filter(Category.id == category_value).first()
+            if not category:
+                return jsonify({"error": "Invalid category ID"}), HTTPStatus.BAD_REQUEST
+            updated_book.category = category_value
+
+        # Update other fields
         if 'title' in data:
             updated_book.title = data['title']
         if 'author' in data:
             updated_book.author = data['author']
         if 'year_published' in data:
             updated_book.year_published = data['year_published']
+        if 'cover_image' in data:
+            updated_book.cover_image = data['cover_image']
         if 'hidden' in data:
             updated_book.hidden = data.get('hidden', False)
 
-        # Commit changes to the database
         db.commit()
-        
-        return jsonify({"message": "Book updated successfully"}), 200
 
-    # Handle missing fields specifically
+        # Fetch the updated book, book type, and category from the database
+        updated_book = db.query(Book).filter(Book.id == book_id).first()
+        book_type = db.query(BookType).filter(BookType.id == updated_book.book_type_id).first()
+        category = db.query(Category).filter(Category.id == updated_book.category).first()
+
+        # Prepare response data
+        response_data = {
+            "title": updated_book.title,
+            "author": updated_book.author,
+            "category": category.category if category else None,
+            "cover_image": updated_book.cover_image,
+            "year_published": updated_book.year_published,
+            "book_type": book_type.type if book_type else None,
+            "hidden": updated_book.hidden
+        }
+
+        return jsonify({"message": "Book updated successfully", "book": response_data}), HTTPStatus.OK
+
     except KeyError as e:
-        return jsonify({"error": f"Missing field: {str(e)}"}), 400
-    
-    # Handle other exceptions (e.g., database errors, etc.)
+        return jsonify({"error": f"Missing field: {str(e)}"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"error": str(e)}), HTTPStatus.BAD_REQUEST
 
+@book_routes_bp.route('/bulk', methods=['DELETE'])
+@jwt_required()
+def bulk_delete_books():
+    if not check_profile_level(1):  # Only allow superadmin (profile == 1) to delete books
+        return jsonify({"error": "Unauthorized access"}), HTTPStatus.FORBIDDEN
 
+    data = request.json
+    if not isinstance(data, list):
+        return jsonify({"error": "Request body must be a list of book IDs"}), HTTPStatus.BAD_REQUEST
+
+    db: Session = next(get_db())
+    deleted_books = []
+
+    for book_id in data:
+        book = db.query(Book).filter(Book.id == book_id).one_or_none()
+        if book:
+            book.hidden = True
+            deleted_books.append({"id": book_id, "title": book.title})
+        else:
+            return jsonify({"error": f"Book ID {book_id} not found"}), HTTPStatus.NOT_FOUND
+
+    db.commit()
+    
+    return jsonify({"message": "Books hidden successfully", "deleted_books": deleted_books}), HTTPStatus.OK
 
 @book_routes_bp.route('/<int:book_id>', methods=['DELETE'])
+@jwt_required()
 def delete_book(book_id):
-    try:
-        db: Session = next(get_db())
-        book = db.query(Book).filter(Book.id == book_id).one_or_none()  # Change to one_or_none for clarity
-        if not book:
-            return jsonify({"error": "Book not found"}), 404
-
-        book.hidden = True  # Set hidden to True instead of deleting
-        db.commit()
-        
-        return jsonify({"message": "Book hidden successfully"}), 200  # Return 204 No Content
-
-    except Exception as e:
-        db.rollback()  # Ensure the session is rolled back if there's an error
-        return jsonify({"error": str(e)}), 400
-
-@book_routes_bp.route('/bulk', methods=['POST'])
-def bulk_create_books():
-    data = request.json
-    if not isinstance(data, list):
-        return jsonify({"error": "Request body must be a list of books"}), 400
+    if not check_profile_level(1):  # Only allow superadmin (profile == 1) to delete books
+        return jsonify({"error": "Unauthorized access"}), HTTPStatus.FORBIDDEN
 
     db: Session = next(get_db())
-    created_books = []
-
-    for book_data in data:
-        try:
-            # Validate that the book type exists in the BookType model
-            book_type_value = book_data['type']  # Expecting 'type' in the request body
-            
-            # Query the BookType to check if the provided type exists as an ID
-            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-            if not book_type:
-                return jsonify({"error": f"Invalid book type ID: {book_type_value}"}), 400
-
-            # Create a new book with the validated book type
-            new_book = Book(
-                title=book_data['title'],
-                author=book_data['author'],
-                year_published=book_data['year_published'],
-                book_type_id=book_type_value,  # Use the valid book type ID
-                hidden=False
-            )
-
-            db.add(new_book)
-            created_books.append({
-                "id": new_book.id,
-                "title": new_book.title,
-                "author": new_book.author,
-                "year_published": new_book.year_published,
-                "type": new_book.book_type_id,  # Send the type as 'type'
-                "hidden": new_book.hidden
-            })
-
-        except KeyError as e:
-            return jsonify({"error": f"Missing field in one of the book entries: {str(e)}"}), 400
-        except Exception as e:
-            return jsonify({"error": str(e)}), 400
-
-    db.commit()
     
-    return jsonify({"message": "Books created successfully", "books": created_books}), 201
+    # Find the book by its ID
+    book = db.query(Book).filter(Book.id == book_id).one_or_none()
+    
+    if not book:
+        return jsonify({"error": f"Book ID {book_id} not found"}), HTTPStatus.NOT_FOUND
 
-
-@book_routes_bp.route('/bulk_delete', methods=['DELETE'])
-def bulk_delete_books():
-    data = request.json
-
-    # Validate the request body
-    if not isinstance(data, list):
-        return jsonify({"error": "Request body must be a list of book IDs"}), 400
-
-    if not all(isinstance(book_id, int) for book_id in data):
-        return jsonify({"error": "All book IDs must be integers"}), 400
-
-    db: Session = next(get_db())
-
-    # Query books whose IDs are in the provided list
-    books_to_hide = db.query(Book).filter(Book.id.in_(data)).all()
-
-    # Extract the IDs of the found books
-    found_ids = {book.id for book in books_to_hide}
-
-    # Determine which IDs were not found by subtracting found IDs from the provided IDs
-    missing_ids = set(data) - found_ids
-
-    # If there are missing IDs, return an error with the list of unrecognized IDs
-    if missing_ids:
-        return jsonify({
-            "error": "Some book IDs were not recognized",
-            "unrecognized_ids": list(missing_ids)
-        }), 404
-
-    # If all IDs are valid, mark the books as hidden
-    for book in books_to_hide:
-        book.hidden = True
+    # Mark the book as hidden (soft delete)
+    book.hidden = True
 
     db.commit()
 
-    return jsonify({"message": f"{len(books_to_hide)} books hidden successfully"}), 200
+    return jsonify({"message": "Book hidden successfully", "book": {"id": book.id, "title": book.title}}), HTTPStatus.OK

@@ -62,11 +62,21 @@
 				{
 					"name": "Update Book",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": \r\n  \"year_published\": \r\n  }",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"cover_image\": \"\",\r\n    \"year_published\": ,\r\n    \"book_type_id\": ,  \r\n    \"hidden\": \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -74,12 +84,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{SERVER}}books/{BookID}",
+							"raw": "{{SERVER}}books/{Book_ID}",
 							"host": [
 								"{{SERVER}}books"
 							],
 							"path": [
-								"{BookID}"
+								"{Book_ID}"
 							]
 						}
 					},
@@ -88,11 +98,21 @@
 				{
 					"name": "Create Book",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "  {\r\n  \"author\": \"\",\r\n  \"title\": \"\",\r\n  \"type\": ,\r\n  \"year_published\": \r\n  }",
+							"raw": "{\r\n    \"title\": \"\",\r\n    \"author\": \"\",\r\n    \"category\": ,  \r\n    \"type\": ,      \r\n    \"year_published\": ,\r\n    \"cover_image\": \"\" \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -111,11 +131,21 @@
 				{
 					"name": "Create Books in Bulk",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"title\": \"\",\r\n        \"author\": \"\",\r\n        \"year_published\": ,\r\n        \"type\": \r\n    },\r\n    {\r\n        \"title\": \"\",\r\n        \"author\": \"\",\r\n        \"year_published\": ,\r\n        \"type\": \r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"type\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": \r\n    },\r\n    {\r\n      \"title\": \"\",\r\n      \"author\": \"\",\r\n      \"category\": ,  // Category ID\r\n      \"type\": ,  // Book Type ID\r\n      \"year_published\": ,\r\n      \"cover_image\": \"\",\r\n      \"hidden\": \r\n    }\r\n  ]\r\n\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -137,6 +167,16 @@
 				{
 					"name": "Delete Books in Bulk",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"body": {
@@ -149,12 +189,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{SERVER}}books/bulk_delete",
+							"raw": "{{SERVER}}books/bulk",
 							"host": [
 								"{{SERVER}}books"
 							],
 							"path": [
-								"bulk_delete"
+								"bulk"
 							]
 						}
 					},
@@ -221,6 +261,16 @@
 				{
 					"name": "All Users",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -247,6 +297,16 @@
 				{
 					"name": "Specific User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -271,6 +331,16 @@
 				{
 					"name": "Delete User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -280,13 +350,6 @@
 							],
 							"path": [
 								"{User_ID}"
-							],
-							"query": [
-								{
-									"key": "showHidden",
-									"value": "1",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -295,11 +358,21 @@
 				{
 					"name": "Create User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "  {\r\n  \"name\": \"\",\r\n  \"email\": \"\",\r\n  \"city\": ,\r\n  \"age\": ,\r\n  \"profile\": \r\n  }",
+							"raw": "{\r\n  \"name\": \"\",\r\n  \"email\": \"\",\r\n  \"password\": \"\", //At least 8 digits, one lowercase, one uppercase and one symbol\r\n  \"city\": , //integer corresponding to the id in cities model\r\n  \"age\": ,\r\n  \"profile\": \r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -307,9 +380,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{SERVER}}users",
+							"raw": "{{SERVER}}users/create_user",
 							"host": [
 								"{{SERVER}}users"
+							],
+							"path": [
+								"create_user"
 							]
 						}
 					},
@@ -318,11 +394,21 @@
 				{
 					"name": "Create Users in bulk",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"name\": \"\",\r\n        \"email\": \"\",\r\n        \"city\": ,\r\n        \"age\": ,\r\n        \"profile\": \r\n    },\r\n    {\r\n        \"name\": \"\",\r\n        \"email\": \"\",\r\n        \"city\": ,\r\n        \"age\": ,\r\n        \"profile\": \r\n    }\r\n]\r\n",
+							"raw": "[\r\n  {\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"password\": \"\", //At least 8 digits, one lowercase, one uppercase, one symbol\r\n    \"city\": , //id in cities model\r\n    \"age\": ,\r\n    \"profile\": \r\n  },\r\n  {\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"password\": \"\", //At least 8 digits, one lowercase, one uppercase, one symbol\r\n    \"city\": , //id in cities model\r\n    \"age\": ,\r\n    \"profile\": \r\n  }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -344,11 +430,21 @@
 				{
 					"name": "Delete Users in bulk",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "DELETE",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[{User_ID}, {Another_USer_ID},]\r\n",
+							"raw": "[{User_ID}, {Another_USer_ID}]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -388,6 +484,71 @@
 							],
 							"path": [
 								"{User_ID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{place the token provided in the response of the login}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"\",\r\n    \"email\": \"\",\r\n    \"city\": ,\r\n    \"age\": ,\r\n    \"password\": \"\" //value should be at least 8 digits, one lowercase, one uppercase and one symbol\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users/register",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"\",\r\n    \"password\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}users/login",
+							"host": [
+								"{{SERVER}}users"
+							],
+							"path": [
+								"login"
 							]
 						}
 					},
