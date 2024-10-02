@@ -12,7 +12,7 @@ def get_all_categories():
     categories = db.query(Category).all()
 
     # Build the response
-    categories_list = [{"id": category.id, "name": category.name} for category in categories]
+    categories_list = [{"id": category.id, "category": category.category} for category in categories]
     
     return jsonify(categories_list), 200
 
@@ -27,7 +27,7 @@ def get_category(category_id):
     if category:
         return jsonify({
             "id": category.id,
-            "name": category.name
+            "category": category.category
         }), 200
     
     return jsonify({"error": "Category not found"}), 404

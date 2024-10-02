@@ -1,6 +1,7 @@
 # TODO
 
 ## Backend
+- [x] Add a number of pages field to the book model that automatically gives a book type value to the book according to the number of pages  _03/10/2024_
 - [x] Implement a migrations system __(alembic module)__ to make changes on the database structure _29/09/2024_
 - [ ] Test API
     - [x] Create API collection
@@ -64,6 +65,7 @@
 - [ ] Add a folder with examples to the api collection so that on first app run you can easily create multiple entries on all models
 - [ ] Implement a function to recover a forgotten password
 - [ ] Find an easy way to get book cover images (maybe a free API or book cover image database) and implement it
+
 
 ## Frontend
 

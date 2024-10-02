@@ -20,6 +20,14 @@ def check_profile_level(required_level):
     # Check if the current user's profile level is equal to or lower than the required level
     return current_user.profile <= required_level
 
+def get_book_type_id(number_of_pages: int, db: Session) -> int:
+    if number_of_pages >= 300:
+        return 1  # LONG type
+    elif 150 <= number_of_pages < 300:
+        return 2  # MEDIUM type
+    else:
+        return 3  # SHORT type
+
 @book_routes_bp.route('/', methods=['POST'])
 @jwt_required()
 def create_book():
@@ -29,45 +37,45 @@ def create_book():
     data = request.json
     try:
         # Validate that the book type and category exist
-        book_type_value = data['type']
         category_value = data['category']
-        
+        number_of_pages = data['number_of_pages']
+
         db: Session = next(get_db())
-        
-        # Check if the book type exists
-        book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-        if not book_type:
-            return jsonify({"error": "Invalid book type ID"}), HTTPStatus.BAD_REQUEST
-        
+
         # Check if the category exists
         category = db.query(Category).filter(Category.id == category_value).first()
         if not category:
             return jsonify({"error": "Invalid category ID"}), HTTPStatus.BAD_REQUEST
 
-        # Create a new book with validated book type and category
+        # Determine book type ID based on number of pages
+        book_type_id = get_book_type_id(number_of_pages, db)
+
+        # Create a new book with validated category and determined book type
         new_book = Book(
             title=data['title'],
             author=data['author'],
             category=category_value,
             cover_image=data.get('cover_image'),
             year_published=data['year_published'],
-            book_type_id=book_type_value,
+            book_type_id=book_type_id,
+            number_of_pages=number_of_pages,  # Include this field
             hidden=False
         )
-        
+
         db.add(new_book)
         db.commit()
         db.refresh(new_book)
-        
+
         return jsonify({"message": "Book created successfully", "book": {
             "id": new_book.id,
             "title": new_book.title,
             "author": new_book.author,
             "year_published": new_book.year_published,
-            "type": new_book.book_type_id,
+            "type": db.query(BookType).filter(BookType.id == book_type_id).first().type,  # Get type value
             "category": category.category,
             "cover_image": new_book.cover_image,
-            "hidden": new_book.hidden
+            "number_of_pages": new_book.number_of_pages,  # Add number_of_pages to response
+            "hidden": int(new_book.hidden)  # Convert to 1 or 0
         }}), HTTPStatus.CREATED
 
     except KeyError as e:
@@ -90,18 +98,16 @@ def bulk_create_books():
 
     try:
         for book_data in data:
-            book_type_value = book_data['type']
             category_value = book_data['category']
-
-            # Validate book type
-            book_type = db.query(BookType).filter(BookType.id == book_type_value).first()
-            if not book_type:
-                return jsonify({"error": f"Invalid book type ID: {book_type_value}"}), HTTPStatus.BAD_REQUEST
+            number_of_pages = book_data['number_of_pages']  # Get the number of pages from the book data
 
             # Validate category
             category = db.query(Category).filter(Category.id == category_value).first()
             if not category:
                 return jsonify({"error": f"Invalid category ID: {category_value}"}), HTTPStatus.BAD_REQUEST
+
+            # Determine book type ID based on number of pages
+            book_type_id = get_book_type_id(number_of_pages, db)
 
             # Create the new book object
             new_book = Book(
@@ -110,7 +116,8 @@ def bulk_create_books():
                 category=category_value,
                 cover_image=book_data.get('cover_image'),
                 year_published=book_data['year_published'],
-                book_type_id=book_type_value,
+                book_type_id=book_type_id,  # Use the determined book type ID
+                number_of_pages=number_of_pages,  # Include the number of pages
                 hidden=book_data.get('hidden', False)  # Set hidden with default False
             )
 
@@ -124,10 +131,11 @@ def bulk_create_books():
                 "title": new_book.title,
                 "author": new_book.author,
                 "year_published": new_book.year_published,
-                "type": new_book.book_type_id,
+                "type": db.query(BookType).filter(BookType.id == book_type_id).first().type,  # Get type value
                 "category": category.category,
                 "cover_image": new_book.cover_image,
-                "hidden": new_book.hidden
+                "number_of_pages": new_book.number_of_pages,  # Add number_of_pages to response
+                "hidden": int(new_book.hidden)  # Convert hidden to 1 or 0
             })
 
         # Commit the transaction after all books are processed
@@ -165,6 +173,7 @@ def get_all_books():
         "title": book.title,
         "author": book.author,
         "year_published": book.year_published,
+        "number_of_pages":book.number_of_pages,
         "type": book.book_type_id,
         "category": book.category,
         "cover_image": book.cover_image,
@@ -195,6 +204,7 @@ def get_book(book_id):
         "title": book.title,
         "author": book.author,
         "year_published": book.year_published,
+        "number_of_pages": book.number_of_pages, 
         "type": book.book_type_id,
         "category": book.category,
         "cover_image": book.cover_image,

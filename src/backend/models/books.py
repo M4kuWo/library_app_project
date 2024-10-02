@@ -12,6 +12,7 @@ class Book(Base):
     category = Column(Integer, ForeignKey('categories.id'), nullable=False)
     cover_image = Column(String, nullable=True)
     year_published = Column(Integer, nullable=False)
+    number_of_pages = Column(Integer, nullable=False)
     book_type_id = Column(Integer, ForeignKey('book_types.id'), nullable=False)
     hidden = Column(Boolean, default=False)
 
