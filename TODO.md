@@ -77,6 +77,13 @@
     - [ ] Favicon
     - [ ] Extra images
 
+- [ ] Set a simple working ui
+    - [x] Login page _05/10/2024_
+    - [x] Registration page _05/10/2024_
+    - [ ] User home page
+    - [ ] Admin home page
+    
+- [ ] Beautify everything
 
 ## README File
 
