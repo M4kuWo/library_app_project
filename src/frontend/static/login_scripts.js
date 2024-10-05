@@ -19,19 +19,22 @@ const loginUser = () => {
         const accessToken = response.data.access_token; // Get the token
         const userProfile = response.data.user.profile; // Access the nested profile
 
-        // Check if the user profile is valid (1, 2, or 3)
-        if ([1, 2, 3].includes(userProfile)) {
-            // Handle valid user profile
-            console.log("Logged in successfully with profile:", userProfile);
-            console.log("Access Token:", accessToken);
-            
-            // Store token for further use (e.g., local storage)
-            localStorage.setItem('userToken', accessToken);
-            
-            // Redirect to Home_admin.html
-            window.location.href = 'Home_admin.html'; 
+        // Log the retrieved profile
+        console.log("Logged in successfully with profile:", userProfile);
+        console.log("Access Token:", accessToken);
+
+        // Store token for further use (e.g., local storage)
+        localStorage.setItem('userToken', accessToken);
+
+        // Redirect based on user profile
+        if (userProfile === 1 || userProfile === 2) {
+            // Redirect for superadmin (profile 1) or admin (profile 2)
+            window.location.href = 'home_admin.html'; 
+        } else if (userProfile === 3) {
+            // Redirect for regular user (profile 3)
+            window.location.href = 'home_user.html'; 
         } else {
-            // Handle invalid user profile
+            // Handle unexpected profiles
             document.getElementById("error-message").innerText = "Invalid user profile.";
         }
     })
@@ -53,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Attach click event for the register button (if applicable)
     document.getElementById('register-button').onclick = () => {
-        // You can add logic for registration here, e.g., redirect to the registration page
+        // Redirect to register page
         window.location.href = 'register.html'; // Redirect to register page
     }
 });
