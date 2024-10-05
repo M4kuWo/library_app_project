@@ -84,3 +84,5 @@
 
 ## Finishing touches
 - [ ] Update the requirements.txt file and make sure all necessary modules and versions are included
+- [ ] Move the secret key outside of the project after production for safety
+- [ ] Remove the token found log from the admin home scripts

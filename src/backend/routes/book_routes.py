@@ -156,24 +156,38 @@ def get_all_books():
 
     show_hidden = request.args.get('showHidden', default='0') == '1'
     hidden_only = request.args.get('hiddenOnly', default='0') == '1'
+    search_term = request.args.get('search', default='')
 
-    query = db.query(Book).filter(Book.hidden.is_(False))
+    # Base query for books
+    query = db.query(Book)
 
+    # Apply filters based on parameters
     if hidden_only:
         # Show only books that are hidden
-        query = db.query(Book).filter(Book.hidden.is_(True))
+        query = query.filter(Book.hidden.is_(True))
     elif show_hidden:
         # Show both hidden and non-hidden books
-        query = db.query(Book)
+        pass  # No additional filter needed
+    
+    # Show only non-hidden books by default
+    else:
+        query = query.filter(Book.hidden.is_(False))
 
+    # Apply search filter if a search term is provided
+    if search_term:
+        query = query.filter(Book.title.ilike(f"%{search_term}%") | 
+                             Book.author.ilike(f"%{search_term}%"))
+
+    # Fetch the filtered books
     books = query.all()
 
+    # Create the response data
     books_list = [{
         "id": book.id,
         "title": book.title,
         "author": book.author,
         "year_published": book.year_published,
-        "number_of_pages":book.number_of_pages,
+        "number_of_pages": book.number_of_pages,
         "type": book.book_type_id,
         "category": book.category,
         "cover_image": book.cover_image,
@@ -181,6 +195,7 @@ def get_all_books():
     } for book in books]
 
     return jsonify({"books": books_list}), HTTPStatus.OK
+
 
 @book_routes_bp.route('/<int:book_id>', methods=['GET'])
 def get_book(book_id):

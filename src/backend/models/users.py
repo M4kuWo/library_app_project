@@ -22,6 +22,9 @@ class User(Base):
     # Add the relationship to the UserProfile model
     profile_relation = relationship('UserProfile', backref='users')
 
+    # Add the relationship to the City model
+    city_relation = relationship('City', backref='users')
+
     def __repr__(self):
         return f"<User(name={self.name}, city={self.city})>"
 

@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_
 from ...database import get_db, UserProfile, City
 from ..models import User
 from ..schemas.user import UserCreate, UserResponse
@@ -10,6 +11,7 @@ from ..dependencies import get_current_admin, get_current_user
 from passlib.context import CryptContext
 from http import HTTPStatus
 from pydantic import ValidationError
+from collections import OrderedDict  # Import OrderedDict which allows to order the responses' fields
 
 user_routes_bp = Blueprint('user_routes', __name__)
 
@@ -220,25 +222,30 @@ def login_user():
     # Check if the provided password matches the stored hash
     password = data['password']
     if user.verify_password(password):
-        # Create a token with the user information (e.g., id, profile)
+        # Create a token with the user information (e.g., id, email, profile, name)
         access_token = create_access_token(
             identity={
-                "id": user.id,
-                "email": user.email,
-                "profile": "User" if user.profile == 2 else "Admin"
+                "id": user.id,  # User ID
+                "email": user.email,  # User Email
+                "name": user.name,  # User Name
+                "profile": user.profile  # User Profile
             },
             expires_delta=timedelta(hours=1)  # Token expiration time
         )
-        return jsonify({
+
+        # Create a response object with token and user info
+        response_data = {
             "message": "Login successful",
-            "access_token": access_token,
+            "access_token": access_token,  # Include the token in the response
             "user": {
                 "id": user.id,
                 "name": user.name,
                 "email": user.email,
-                "profile": "User" if user.profile == 2 else "Admin"
+                "profile": user.profile  # User Profile
             }
-        }), 200
+        }
+
+        return jsonify(response_data), 200
     else:
         return jsonify({"error": "Invalid password"}), 401
 
@@ -285,33 +292,47 @@ def get_user(user_id):
 @jwt_required()
 def get_all_users():
     db: Session = next(get_db())
-    
-    # Get the showHidden parameter from the request, default to False
+
+    # Get the showHidden and hiddenOnly parameters from the request
     show_hidden = request.args.get('showHidden', 'false').lower() in ['true', '1']
-    
-    # Get the hiddenOnly parameter from the request, default to None
     hidden_only = request.args.get('hiddenOnly', None)
+    
+    # Get search parameter for name, email, or ID
+    search_value = request.args.get('search', '')
 
     # Get the current user's email from the JWT token
     current_user_email = get_jwt_identity().get('email')
-    
+
     # Find the current user based on the email
     current_user = db.query(User).filter(User.email == current_user_email).first()
 
     # Check if current user exists and if they are an admin
-    if not current_user or current_user.profile > 2:  # Assuming 'profile' determines the role
+    if not current_user or current_user.profile > 2:
         return jsonify({"error": "Access forbidden: only admins can perform this action"}), 403
 
     # Start the query
-    query = db.query(User).options(joinedload(User.profile_relation))
-
+    query = db.query(User).options(
+        joinedload(User.profile_relation),
+        joinedload(User.city_relation)  # Join the city_relation to load the city data
+    )
     # Apply the showHidden logic
     if not show_hidden:
-        query = query.filter(User.hidden == False)  # Only show non-hidden users by default
+        query = query.filter(User.hidden == False)
 
     # Apply hiddenOnly filter if provided
     if hidden_only in ['1', 'true']:
         query = query.filter(User.hidden == True)
+
+    # Add search functionality for name, email, or ID (case insensitive)
+    if search_value:
+        search_pattern = f"%{search_value}%"
+        query = query.filter(
+            or_(
+                User.name.ilike(search_pattern),
+                User.email.ilike(search_pattern),
+                User.id.ilike(search_pattern)
+            )
+        )
 
     # Execute the query
     users = query.all()
@@ -322,13 +343,13 @@ def get_all_users():
             "id": user.id,
             "name": user.name,
             "email": user.email,
-            "city": user.city,
+            "city": user.city_relation.name if user.city_relation else None,  # Access city name from relation
             "age": user.age,
-            "profile": user.profile_relation.name if user.profile_relation else None,  # Access the joined UserProfile
+            "profile": user.profile_relation.name if user.profile_relation else None,
             "hidden": user.hidden
         } for user in users
     ]
-    
+
     return jsonify(users_list), 200
 
 @user_routes_bp.route('/<int:user_id>', methods=['PUT'])
