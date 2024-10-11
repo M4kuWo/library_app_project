@@ -93,3 +93,6 @@
 - [ ] Update the requirements.txt file and make sure all necessary modules and versions are included
 - [ ] Move the secret key outside of the project after production for safety
 - [ ] Remove the token found log from the admin home scripts
+- [ ] Implement a token expiration check to redirect the user to the login screen
+- [ ] Have hidden users be unable to log in
+- [ ] Add toasts to admin page actions

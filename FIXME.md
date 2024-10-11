@@ -3,3 +3,4 @@
 - [ ] Bcrypt causing silent error when performing the login route. The route is successfull though and the token provided is valid but there is an error in the background for some reason. Probably version discrepancies in dependencies.
 - [ ] Not exactly a bug but the admin validation is currently being done by getting the email from the token and searching for the user in the database to check his profile. This would probably be better if everything came directly from the token since it has all necessary info
 - [ ] Storing tokens in cookies with the set_cookie statement doesn't work. Set it to store on local storage but storing in cookies might be a better approach
+- [ ] After updating users on admin page the user list is not summoned

@@ -12,6 +12,17 @@ body {
     background-color: #f4f4f4;
 }
 
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050; /* Bootstrap's z-index for toasts */
+}
+
+.toast {
+    min-width: 250px; /* Set a minimum width for better readability */
+}
+
 /* Sidebar Styles */
 .sidebar {
     width: 250px;
