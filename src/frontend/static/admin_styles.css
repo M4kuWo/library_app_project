@@ -107,9 +107,17 @@ p {
     color: #2c3e50;
 }
 
-#users-container {
-    display: none; /* Hidden by default */
+.book-cover {
+    width: 150px; /* Fixed width */
+    height: 200px; /* Fixed height */
+    object-fit: cover; /* Maintain aspect ratio, cover the area */
+    margin-bottom: 15px; /* Add some space between the image and the title */
 }
+
+
+/* #cards-container { */
+    /* display: none; Hidden by default */
+/* } */
 
 .user-card {
     margin-bottom: 20px;

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models import Book, User
 from ...database import get_db, BookType, Category
@@ -159,8 +159,10 @@ def get_all_books():
     search_term = request.args.get('search', default='')
 
     # Base query for books
-    query = db.query(Book)
-
+    query = db.query(Book).options(
+        joinedload(Book.book_category),  # Join Category relation
+        joinedload(Book.book_type)  # Join BookType relation
+    )
     # Apply filters based on parameters
     if hidden_only:
         # Show only books that are hidden
@@ -188,14 +190,13 @@ def get_all_books():
         "author": book.author,
         "year_published": book.year_published,
         "number_of_pages": book.number_of_pages,
-        "type": book.book_type_id,
-        "category": book.category,
+        "category": book.book_category.category if book.book_category else None,  # Access category name
+        "type": book.book_type.type if book.book_type else None,    # Access book type name
         "cover_image": book.cover_image,
         "hidden": 1 if book.hidden else 0
     } for book in books]
 
     return jsonify({"books": books_list}), HTTPStatus.OK
-
 
 @book_routes_bp.route('/<int:book_id>', methods=['GET'])
 def get_book(book_id):

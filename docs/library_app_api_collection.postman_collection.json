@@ -29,6 +29,11 @@
 									"key": "hiddenOnly",
 									"value": "1",
 									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
 								}
 							]
 						}
@@ -231,6 +236,13 @@
 							"raw": "{{SERVER}}book_types",
 							"host": [
 								"{{SERVER}}book_types"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -287,6 +299,11 @@
 								{
 									"key": "hiddenOnly",
 									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
 									"disabled": true
 								}
 							]
@@ -562,12 +579,29 @@
 				{
 					"name": "All User Profiles",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{SERVER}}user_profiles",
 							"host": [
 								"{{SERVER}}user_profiles"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -784,6 +818,13 @@
 							"raw": "{{SERVER}}cities",
 							"host": [
 								"{{SERVER}}cities"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": null,
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -820,6 +861,56 @@
 							"raw": "{{SERVER}}categories",
 							"host": [
 								"{{SERVER}}categories"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "hiddenOnly",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"\"  // Required: Name of the new category\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER}}categories",
+							"host": [
+								"{{SERVER}}categories"
 							]
 						}
 					},
@@ -830,6 +921,76 @@
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "{{SERVER}}categories/{CategoryID}",
+							"host": [
+								"{{SERVER}}categories"
+							],
+							"path": [
+								"{CategoryID}"
+							],
+							"query": [
+								{
+									"key": "showHidden",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER}}categories/{CategoryID}",
+							"host": [
+								"{{SERVER}}categories"
+							],
+							"path": [
+								"{CategoryID}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{user token received in the response after login}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category\": \"\",  // (optional) New name for the category\r\n  \"hidden\": 0  // (optional) Set to 1 to hide the category, or 0 to make it visible\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{SERVER}}categories/{CategoryID}",
 							"host": [

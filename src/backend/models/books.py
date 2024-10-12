@@ -20,7 +20,7 @@ class Book(Base):
     book_type = relationship("BookType")
 
     # Relationship with categories model
-    book_type = relationship("Category")
+    book_category = relationship("Category")
 
 
     def __repr__(self):
